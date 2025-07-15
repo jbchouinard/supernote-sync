@@ -1,20 +1,38 @@
 # supernote-sync
 
-An unofficial tool for [Supernote](https://supernote.com/) e-Ink notebooks, for syncing files locally.
+An unofficial tool for [Supernote](https://supernote.com/) e-Ink notebooks, for syncing files locally and automatically converting notebooks to PDF.
 
 The program uses the [Supernote Browse & Access](https://support.supernote.com/Tools-Features/wi-fi-transfer) feature to synchronize files. It must run on the same local network as the Supernote device.
 
 By default, `supernote-sync` syncs the INBOX directory in push mode, and all other directories in pull mode.
 
-## Requirements
-- Python 3.9+
-- Poetry
+
+## Usage
+
+### Install with pipx
+
+```sh
+pipx install supernote-sync
+supernote-sync --supernote-url=http://xxx.xxx.xxx.xxx:8089 --sync-dir=path/to/dir start
+```
+
+### Run with Docker
+
+```sh
+docker build -t supernote-sync .
+docker run \ 
+    -e SUPERNOTE_URL="http://xxx.xxx.xxx.xxx:8089" \
+    -e SUPERNOTE_DEVICE_NAME="Change To Your Device Name" \
+    -v ./supernote:/supernote supernote-sync
+```
 
 ## Configuration
 
 Configuration options can be set by environment variables or command line arguments.
 
 ### Supernote Connection Settings
+
+WiFi transfer must be toggled on on the Supernote device. The popup will show the URL of the device.
 
 | Option | Environment Variable | CLI Argument | Description | Default |
 |--------|---------------------|-------------|-------------|--------|
@@ -34,11 +52,17 @@ Configuration options can be set by environment variables or command line argume
 
 ### Database Settings
 
+By default, uses a local SQLite database. Can use any database supported by SQLAlchemy.
+
 | Option | Environment Variable | CLI Argument | Description | Default |
 |--------|---------------------|-------------|-------------|--------|
 | `db_url` | `DB_URL` | `--db-url` | Database connection URL | `sqlite:///supernote/db.sqlite` |
 
 ### PDF Conversion Settings
+
+Configure automatic conversion of notebooks to PDF when syncing.
+
+To match the notebook, the page size is A5 for the Manta, or A4 for the Nomad.
 
 | Option | Environment Variable | CLI Argument | Description | Default |
 |--------|---------------------|-------------|-------------|--------|

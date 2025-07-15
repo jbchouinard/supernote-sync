@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Annotated, FrozenSet, Iterable, Optional, Union
 
-from pydantic import BeforeValidator
+from pydantic import AnyHttpUrl, BeforeValidator
 from pydantic_settings import BaseSettings
 
 from snsync.schema import PageSize
@@ -18,7 +18,7 @@ StrSet = Annotated[FrozenSet[str], BeforeValidator(strset)]
 
 
 class SupernoteConfig(BaseSettings):
-    supernote_url: str
+    supernote_url: AnyHttpUrl
     supernote_device_name: str
 
 
