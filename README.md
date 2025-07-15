@@ -9,21 +9,27 @@ By default, `supernote-sync` syncs the INBOX directory in push mode, and all oth
 
 ## Usage
 
-### Install with pipx
+### Install and run with pipx
 
 ```sh
 pipx install supernote-sync
-supernote-sync --supernote-url=http://xxx.xxx.xxx.xxx:8089 --sync-dir=path/to/dir start
+supernote-sync --supernote-url=http://xxx.xxx.xxx.xxx:8089 --supernote-device-name="Change To Your Device Name" --sync-dir=path/to/dir/to/sync start
 ```
 
 ### Run with Docker
 
 ```sh
-docker build -t supernote-sync .
 docker run \ 
     -e SUPERNOTE_URL="http://xxx.xxx.xxx.xxx:8089" \
     -e SUPERNOTE_DEVICE_NAME="Change To Your Device Name" \
-    -v ./supernote:/supernote supernote-sync
+    -v path/to/dir/to/sync:/supernote \
+    ghcr.io/jbchouinard/supernote-sync:latest
+```
+
+### Build Docker image
+
+```sh
+docker build -t supernote-sync .
 ```
 
 ## Configuration
