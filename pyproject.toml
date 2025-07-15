@@ -1,5 +1,5 @@
 [project]
-name = "snsync"
+name = "supernote-sync"
 version = "0.1.0"
 description = ""
 authors = [
@@ -16,7 +16,10 @@ dependencies = [
     "loguru (>=0.7.3,<0.8.0)"
 ]
 
+
 [tool.poetry]
+name = "supernote-sync"
+packages = [{include = "snsync"}]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"
