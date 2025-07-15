@@ -1,0 +1,9 @@
+.tool-versions
+__pycache__
+.ruff_cache
+.venv
+supernote/
+.envrc
+*.pyc
+*.pyo
+poetry.lock

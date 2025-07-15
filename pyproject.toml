@@ -1,0 +1,32 @@
+[project]
+name = "snsync"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Jerome Boisvert-Chouinard",email = "github@jbchouinard.net"}
+]
+license = "Apache-2.0"
+readme = "README.md"
+requires-python = ">=3.9,<4"
+dependencies = [
+    "supernotelib (>=0.6.2,<0.7.0)",
+    "pydantic (>=2.11.7,<3.0.0)",
+    "pydantic-settings (>=2.10.1,<3.0.0)",
+    "requests (>=2.32.4,<3.0.0)",
+    "loguru (>=0.7.3,<0.8.0)"
+]
+
+[tool.poetry]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+
+[tool.poetry.scripts]
+supernote-sync = "snsync.__main__:main"
+
+[tool.ruff]
+line-length = 120
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
