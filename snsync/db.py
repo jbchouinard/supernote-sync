@@ -4,7 +4,7 @@ from typing import List
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
-from snsync.config import Config
+from snsync.config import get_config
 from snsync.schema import LocalFileMeta
 
 
@@ -30,40 +30,40 @@ class DbFileMeta(Base):
 _engines = {}
 
 
-def get_engine(conf: Config) -> Engine:
-    url = conf.db_url
-    if url not in _engines:
-        _engines[url] = create_engine(url)
-    return _engines[url]
+def get_engine(db_url: str) -> Engine:
+    if db_url not in _engines:
+        _engines[db_url] = create_engine(db_url)
+    return _engines[db_url]
 
 
-def get_session(conf: Config) -> Session:
-    return Session(get_engine(conf))
+def get_session() -> Session:
+    db_url = get_config().db_url
+    return Session(get_engine(db_url))
 
 
-def create_tables(conf: Config):
-    engine = get_engine(conf)
+def create_tables():
+    engine = get_engine(get_config().db_url)
     Base.metadata.create_all(bind=engine)
 
 
-def get_db_files_meta(conf: Config) -> List[DbFileMeta]:
+def get_db_files_meta(device_name: str) -> List[DbFileMeta]:
     session: Session
-    with get_session(conf) as session:
-        return session.query(DbFileMeta).filter_by(device_name=conf.supernote_device_name).all()
+    with get_session() as session:
+        return session.query(DbFileMeta).filter_by(device_name=device_name).all()
 
 
-def delete_file_meta(file_key: tuple[str, str], conf: Config):
+def delete_file_meta(file_key: tuple[str, str]):
     session: Session
-    with get_session(conf) as session:
-        session.delete(
-            session.query(DbFileMeta).filter_by(device_name=file_key[0], device_path=file_key[1]).one_or_none()
-        )
-        session.commit()
+    with get_session() as session:
+        record = session.query(DbFileMeta).filter_by(device_name=file_key[0], device_path=file_key[1]).one_or_none()
+        if record is not None:
+            session.delete(record)
+            session.commit()
 
 
-def record_file_action(meta: LocalFileMeta, action: str, conf: Config):
+def record_file_action(meta: LocalFileMeta, action: str):
     session: Session
-    with get_session(conf) as session:
+    with get_session() as session:
         session.merge(
             DbFileMeta(
                 device_name=meta.device_name,

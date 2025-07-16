@@ -18,6 +18,10 @@ class SupernoteFileMeta:
     size: int
 
     @property
+    def relative_path(self) -> Path:
+        return Path(self.path.lstrip("/"))
+
+    @property
     def file_key(self):
         return (self.device_name, self.path.lstrip("/"))
 
@@ -43,6 +47,10 @@ class LocalFileMeta:
     path: Path
 
     @property
+    def relative_path(self) -> Path:
+        return self.path.relative_to(self.sync_dir)
+
+    @property
     def is_file(self) -> bool:
         return self.path.is_file()
 
@@ -60,7 +68,7 @@ class LocalFileMeta:
 
     @property
     def file_key(self):
-        return (self.device_name, self.path.relative_to(self.sync_dir).as_posix().lstrip("/"))
+        return (self.device_name, self.relative_path.as_posix().lstrip("/"))
 
     def md5(self) -> bytes:
         if not self.is_file:

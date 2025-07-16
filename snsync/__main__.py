@@ -1,7 +1,7 @@
 from loguru import logger
 from pydantic_settings import BaseSettings, CliApp, CliSubCommand, get_subcommand
 
-from snsync.config import Config, LoggingConfig, SupernoteConfig
+from snsync.config import LoggingConfig, ServiceConfig, SupernoteConfig
 from snsync.service import list_files, run_check, run_forever, run_once, setup_logging
 from snsync.supernote import SupernoteClientError
 
@@ -13,21 +13,21 @@ class LsCommand(SupernoteConfig, LoggingConfig):
         list_files(self)
 
 
-class CheckCommand(Config):
+class CheckCommand(ServiceConfig):
     """Show file sync status."""
 
     def run(self):
         run_check(self)
 
 
-class RunCommand(Config):
+class RunCommand(ServiceConfig):
     """Run file sync once then exit."""
 
     def run(self):
         run_once(self)
 
 
-class StartCommand(Config):
+class StartCommand(ServiceConfig):
     """Run file sync until stopped."""
 
     def run(self):
@@ -53,7 +53,6 @@ class Commands(
             command.run()
         except SupernoteClientError as e:
             logger.error("Error connecting to device: {}", e)
-            print(f"Error connecting to device")
 
 
 def main():

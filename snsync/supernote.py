@@ -1,11 +1,14 @@
+from __future__ import annotations
+
 import json
 import re
 from pathlib import Path
-from typing import Iterator, Optional, Union
+from typing import Iterator, Optional
 
 import requests
 from loguru import logger
 
+from snsync.config import SupernoteConfig
 from snsync.schema import SupernoteFileMeta
 
 RE_JSON = re.compile(r"const json = '({[^']+})'")
@@ -20,17 +23,21 @@ class SupernoteClient:
         self.base_url = supernote_url
         self.device_name = device_name
 
+    @classmethod
+    def from_config(cls, config: SupernoteConfig) -> SupernoteClient:
+        return cls(supernote_url=config.supernote_url, device_name=config.supernote_name)
+
     def _get_page_json_data(self, path="/") -> dict:
         url = f"{self.base_url}{path}"
         try:
-            logger.info("Fetching {}", url)
+            logger.debug("Fetching {}", url)
             contents = requests.get(url).text
         except requests.exceptions.RequestException as e:
             raise SupernoteClientError(f"Error fetching {url}: {e}") from e
 
         json_str = RE_JSON.search(contents).group(1)
         if not json_str:
-            s
+            raise SupernoteClientError(f"No JSON data found in {url}")
         return json.loads(json_str)
 
     def ping(self, timeout=1) -> bool:
@@ -51,7 +58,7 @@ class SupernoteClient:
 
             file_list = data.get("fileList", [])
             for file_obj in file_list:
-                logger.debug("Got file {}", file_obj)
+                logger.trace("Got file {}", file_obj)
                 is_dir = file_obj.get("isDirectory", False)
                 file_uri = file_obj.get("uri")
                 if is_dir and recursive:
@@ -63,7 +70,7 @@ class SupernoteClient:
                     else:
                         logger.warning("Invalid file object: {}", file_obj)
 
-    def download(self, src: Union[str, SupernoteFileMeta], target: Union[str, Path]):
+    def download(self, src: str | SupernoteFileMeta, target: str | Path):
         if isinstance(src, SupernoteFileMeta):
             src_path = src.path
         else:
@@ -72,16 +79,16 @@ class SupernoteClient:
         target_path.parent.mkdir(parents=True, exist_ok=True)
         src_url = f"{self.base_url}/{src_path.lstrip('/')}"
         try:
-            logger.info("Downloading {} to {}", src_url, target_path)
             resp = requests.get(src_url, stream=True)
             resp.raise_for_status()
+            logger.success("Downloaded {} to {}", src_url, target_path)
             with target_path.open("wb") as f:
                 for chunk in resp.iter_content(chunk_size=8192):
                     f.write(chunk)
         except Exception as e:
             raise SupernoteClientError(f"Error downloading {src_url}: {e}") from e
 
-    def upload(self, src: Union[str, Path], target: Union[str, SupernoteFileMeta]):
+    def upload(self, src: str | Path, target: str | SupernoteFileMeta):
         if isinstance(target, SupernoteFileMeta):
             target_path = Path(target.path.lstrip("/"))
         else:
@@ -91,8 +98,8 @@ class SupernoteClient:
         target_dir = target_path.parent.as_posix()
         files = {"file": (target_filename, open(src, "rb"))}
         try:
-            logger.info("Uploading {} to {}", src, target_path)
             resp = requests.post(f"{self.base_url}/{target_dir}", files=files)
             resp.raise_for_status()
+            logger.success("Uploading {} to {}", src, target_path)
         except Exception as e:
             raise SupernoteClientError(f"Error uploading {src} to {target_path}: {e}") from e

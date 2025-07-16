@@ -3,6 +3,7 @@ __pycache__
 .ruff_cache
 .venv
 supernote/
+supernote.db
 .envrc
 *.pyc
 *.pyo
