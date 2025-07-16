@@ -329,10 +329,12 @@ class ConversionRunner:
             if result == SyncResult.DOWNLOADED or (
                 result == SyncResult.OK and (not output_path.exists() or self.reconvert[converter])
             ):
+                tmp_input_path = self.tmp_dir / local_meta.path.name
+                shutil.copyfile(local_meta.path, tmp_input_path)
                 try:
-                    tmp_path = converter.convert(local_meta.path, self.tmp_dir)
-                    shutil.copyfile(tmp_path, output_path)
-                    tmp_path.unlink(output_path)
+                    tmp_output_path = converter.convert(local_meta.path, self.tmp_dir)
+                    shutil.copyfile(tmp_output_path, output_path)
+                    tmp_output_path.unlink(output_path)
                     logger.success(
                         "Converted {} to {} using {}",
                         local_meta.path,
@@ -341,3 +343,5 @@ class ConversionRunner:
                     )
                 except Exception:
                     logger.exception("Error converting {} using {}", local_meta.path, converter.__class__.__qualname__)
+                finally:
+                    tmp_input_path.unlink()
