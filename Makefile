@@ -9,7 +9,7 @@ publish:
 
 docker-build:
 	docker build --tag $(DOCKER_IMAGE_NAME):$(VERSION) .
-	docker tag $(DOCKER_IMAGE_NAME):$(VERSION) $(DOCKER_REPO):latest
+	docker tag $(DOCKER_IMAGE_NAME):$(VERSION) $(DOCKER_IMAGE_NAME):latest
 
 docker-publish:
 	docker push $(DOCKER_IMAGE_NAME):$(VERSION)
