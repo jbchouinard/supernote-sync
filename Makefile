@@ -1,11 +1,11 @@
-VERSION := $(poetry version --short)
+VERSION := $(shell poetry version --short)
 DOCKER_REPO := ghcr.io/jbchouinard/supernote-sync
 
 build:
 	poetry build
 
 publish:
-	poetry publish --build
+	poetry publish
 
 docker-build:
 	docker build --tag $(DOCKER_REPO):$(VERSION) .
@@ -18,4 +18,7 @@ docker-publish:
 clean:
 	rm -rf dist
 
-.PHONY: build publish docker-build docker-publish clean
+test:
+	poetry run pytest -v tests/
+
+.PHONY: build publish docker-build docker-publish clean test

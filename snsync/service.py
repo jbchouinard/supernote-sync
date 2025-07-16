@@ -1,5 +1,6 @@
 import sys
 import time
+from pathlib import Path
 
 from loguru import logger
 from tabulate import tabulate
@@ -12,12 +13,18 @@ from snsync.sync import FileSyncChecker, FileSyncClient, SyncResult, make_sync_s
 
 
 def setup_logging(config: LoggingConfig):
-    if config.log_file:
-        logger.remove()
-        logger.add(config.log_file, level=config.log_level)
+    if not config.log_file or config.log_file.lower() in ("stdout", "-"):
+        log_file = sys.stdout
+    elif config.log_file.lower == "stderr":
+        log_file = sys.stderr
     else:
-        logger.remove()
-        logger.add(sys.stderr, level=config.log_level, format="<level>{message}</level>")
+        log_file = Path(config.log_file)
+
+    logger.remove()
+    if log_file is sys.stdout:
+        logger.add(sys.stdout, level=config.log_level, format="<level>{message}</level>")
+    else:
+        logger.add(log_file, level=config.log_level)
 
 
 DEFAULT_DIRS = ["Note", "Document", "MyStyle", "EXPORT", "SCREENSHOT", "INBOX"]

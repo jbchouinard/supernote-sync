@@ -1,6 +1,6 @@
 [project]
 name = "supernote-sync"
-version = "0.2.2"
+version = "0.2.3"
 description = "Automatically sync Supernote notebooks and convert to PDF on local WiFi"
 authors = [
     {name = "Jerome Boisvert-Chouinard",email = "github@jbchouinard.net"}
@@ -30,6 +30,7 @@ packages = [{include = "snsync"}]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"
+pudb = "^2025.1"
 
 [tool.poetry.scripts]
 supernote-sync = "snsync.__main__:main"
