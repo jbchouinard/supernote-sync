@@ -1,6 +1,6 @@
 [project]
 name = "supernote-sync"
-version = "0.3.0"
+version = "0.3.1"
 description = "Automatically sync Supernote notebooks and convert to PDF on local WiFi"
 authors = [
     {name = "Jerome Boisvert-Chouinard",email = "github@jbchouinard.net"}

@@ -51,9 +51,9 @@ def _run_once(checker: FileSyncChecker, syncer: FileSyncClient, converter: Conve
     sync_states = list(checker.check_files())
     logger.debug("\n" + make_sync_states_table(sync_states))
     logger.info(f"Syncing {len(sync_states)} files...")
-    for state in sync_states:
-        result, local_meta = syncer.sync(state)
-        converter.run_converters(local_meta, result)
+    sync_results = [syncer.sync(state) for state in sync_states]
+    for result, local_meta in sync_results:
+        converter.run_converters(result, local_meta)
     post_sync_states = checker.check_files()
     logger.debug("\n" + make_sync_states_table(post_sync_states))
 

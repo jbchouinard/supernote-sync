@@ -318,7 +318,7 @@ class ConversionRunner:
                 self.converters_by_ext[ext].append(converter)
             self.reconvert[converter] = reconvert
 
-    def run_converters(self, local_meta: LocalFileMeta | None, result: SyncResult):
+    def run_converters(self, result: SyncResult, local_meta: LocalFileMeta | None):
         if not local_meta:
             return
         converters = self.converters_by_ext.get(local_meta.path.suffix.lower().lstrip("."), [])
