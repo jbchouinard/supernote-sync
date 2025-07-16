@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Annotated, FrozenSet, Iterable, Optional, Union
 
 from pydantic import AnyHttpUrl, BeforeValidator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from snsync.schema import PageSize
 
@@ -17,12 +17,16 @@ def strset(v: Union[str, Iterable[str]]) -> FrozenSet[str]:
 StrSet = Annotated[FrozenSet[str], BeforeValidator(strset)]
 
 
-class SupernoteConfig(BaseSettings):
+class BaseConfig(BaseSettings):
+    model_config = SettingsConfigDict(secrets_dir="/run/secrets", case_sensitive=False)
+
+
+class SupernoteConfig(BaseConfig):
     supernote_url: AnyHttpUrl
     supernote_device_name: str
 
 
-class LoggingConfig(BaseSettings):
+class LoggingConfig(BaseConfig):
     log_file: Optional[Path] = None
     log_level: str = "WARNING"
 

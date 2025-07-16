@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Iterator, List, Optional, Tuple
+from typing import Iterator, Optional, Tuple
 
 from loguru import logger
 from tabulate import tabulate
@@ -13,14 +13,15 @@ from snsync.schema import LocalFileMeta, SupernoteFileMeta
 from snsync.supernote import SupernoteClient
 
 
-def list_local_files(conf: Config) -> Iterator[LocalFileMeta]:
+def list_synced_files(conf: Config) -> Iterator[LocalFileMeta]:
     for path in conf.sync_dir.glob("**/*"):
         if path.is_file():
-            yield LocalFileMeta(
-                device_name=conf.supernote_device_name,
-                sync_dir=conf.sync_dir,
-                path=path,
-            )
+            if path.suffix.lstrip(".") in conf.sync_extensions:
+                yield LocalFileMeta(
+                    device_name=conf.supernote_device_name,
+                    sync_dir=conf.sync_dir,
+                    path=path,
+                )
 
 
 class SyncMode(Enum):
@@ -128,7 +129,7 @@ class FileSyncChecker:
 
     def check_files(self) -> Iterator[FileSyncState]:
         device_meta_by_key = {f.file_key: f for f in self.sn_client.list_files()}
-        local_meta_by_key = {f.file_key: f for f in list_local_files(self.config)}
+        local_meta_by_key = {f.file_key: f for f in list_synced_files(self.config)}
         db_meta_by_key = {f.file_key: f for f in get_db_files_meta(self.config)}
 
         all_keys = set(device_meta_by_key.keys()) | set(local_meta_by_key.keys()) | set(db_meta_by_key.keys())
