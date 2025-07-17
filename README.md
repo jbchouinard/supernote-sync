@@ -54,7 +54,7 @@ The container can be configured via environment variables (see below).
 docker run \ 
     -e SUPERNOTE_IP="xxx.xxx.xxx.xxx" \
     -e SUPERNOTE_NAME="My Device Name" \
-    -v ./supernote:/supernote \
+    -v /path/to/supernote:/supernote \
     ghcr.io/jbchouinard/supernote-sync:latest
 ```
 
