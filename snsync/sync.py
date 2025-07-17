@@ -332,7 +332,7 @@ class ConversionRunner:
                 tmp_input_path = self.tmp_dir / local_meta.path.name
                 shutil.copyfile(local_meta.path, tmp_input_path)
                 try:
-                    tmp_output_path = converter.convert(local_meta.path, self.tmp_dir)
+                    tmp_output_path = converter.convert(tmp_input_path, self.tmp_dir)
                     shutil.copyfile(tmp_output_path, output_path)
                     tmp_output_path.unlink(output_path)
                     logger.success(
