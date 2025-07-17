@@ -17,6 +17,7 @@ ENV TRASH_DIR=
 ENV DB_URL="sqlite:////supernote/supernote-sync.db"
 ENV NOTE_TO_PDF=true
 ENV NOTE_TO_PDF_PAGE_SIZE=A5
+ENV SPD_TO_PNG=true
 ENV LOG_FILE="/supernote/supernote-sync.log"
 ENV LOG_LEVEL=INFO
 ENTRYPOINT ["/venv/bin/supernote-sync", "start"]
